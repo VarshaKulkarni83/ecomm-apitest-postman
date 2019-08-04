@@ -17,6 +17,7 @@ Create environment in postman with below variables,
 The collection has test for availablity and price check request. Add other tests and run using newman.
 
 From the folder where the repository is cloned use to run the collection,
+
 newman run '.\Headless commerce API Test.postman_collection.json' -e .\environmentfile -n 10
 
 # TODO
