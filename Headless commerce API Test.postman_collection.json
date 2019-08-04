@@ -1,0 +1,74 @@
+{
+	"info": {
+		"_postman_id": "319c4b8c-ba55-45d7-a385-4ace2de103e2",
+		"name": "Headless commerce API Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "check_price_and_availability",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b9999446-144a-4580-94d4-ef347d4f5ac6",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"SKU Prices Are Correct\"  , function(){",
+							"   var jsonData = pm.response.json();",
+							"   var responsedata = jsonData.data.shop.productByHandle.variants.edges; ",
+							"   console.log(\"Product Handle: \" + pm.iterationData.get(\"Handle\")); ",
+							"   for (var i in responsedata) {",
+							"    console.log(\"responsedata[i].node.sku : \" + responsedata[i].node.sku);",
+							"    if(responsedata[i].node.sku == data.SKU ){",
+							"        ",
+							"        console.log(\"SKU: \" + pm.iterationData.get(\"SKU\"));",
+							"        console.log(\"PRICE: \" + pm.iterationData.get(\"Price\"));",
+							"        pm.expect(responsedata[i].node.price).to.equal(data.Price);",
+							"    }",
+							"   }",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Shopify-Storefront-Access-Token",
+						"value": "{{access_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/graphql",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "query {shop {productByHandle(handle: \"{{product_handle}}\") { id   variants(first:10){edges{node{id availableForSale sku  price}}}} } }"
+				},
+				"url": {
+					"raw": "https://{{url}}/{{path}}",
+					"protocol": "https",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"{{path}}"
+					]
+				},
+				"description": "Test to get the price and availability of the product"
+			},
+			"response": []
+		}
+	]
+}
