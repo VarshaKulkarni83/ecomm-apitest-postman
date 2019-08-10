@@ -7,3 +7,22 @@ The API used for testing is an ecommerce storefront api provided by Shopify http
 More about shopify https://help.shopify.com/en/api/getting-started
 
 Once you have your store setup in shopify, you can use postman collections to test the e2e commerce journey starting from checking price and availability to placing order.
+
+# How to use
+Create environment in postman with below variables,
+1. access_token - Get storefront access token for your store. https://help.shopify.com/en/api/reference/access/storefrontaccesstoken
+2. path - /api/graphql 
+3. url - https://domain of the store
+
+The collection has test for availablity and price check request. Add other tests and run using newman.
+
+From the folder where the repository is cloned use to run the collection,
+
+newman run '.\Headless commerce API Test.postman_collection.json' -e .\environmentfile -n 10
+
+# TODO
+Add other requests in the journey.
+
+Export results where they can be viewed easily and efficiently.
+
+Use multiple data files.
