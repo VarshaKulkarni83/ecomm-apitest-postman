@@ -1,0 +1,154 @@
+{
+	"info": {
+		"_postman_id": "319c4b8c-ba55-45d7-a385-4ace2de103e2",
+		"name": "Headless commerce API Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "check_price_and_availability",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b9999446-144a-4580-94d4-ef347d4f5ac6",
+						"exec": [
+							"var _ = require('lodash');",
+							"var row_price= parseFloat(data.Price).toFixed(2);",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"SKU Prices Are Correct\"  , function(){",
+							"   var jsonData = pm.response.json();",
+							"   var responsedata = jsonData.data.shop.productByHandle.variants.edges; ",
+							"   ",
+							"    _.each(responsedata,(item) => {",
+							"        console.log(\"sku from file \"+ data.SKU);        ",
+							"   console.log(\"sku from response \"+ item.node.sku);",
+							"          if(item.node.sku == data.SKU){",
+							"   console.log(\"price from file \"+ row_price);        ",
+							"   console.log(\"item price \"+ item.node.price);",
+							"                pm.environment.set(\"variant_id\", item.node.id);",
+							"                pm.expect(item.node.price).to.equal(row_price);",
+							"                }  ",
+							"         });",
+							"  ",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "11612355-c9df-44bd-a8d2-486fb04dee99",
+						"exec": [
+							" console.log(\"Iteration Data \" + JSON.stringify(pm.iterationData)); ",
+							"  "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Shopify-Storefront-Access-Token",
+						"value": "{{access_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/graphql",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "query {shop {productByHandle(handle: \"{{Product_handle}}\") { id   variants(first:10){edges{node{id availableForSale sku  price}}}} } }"
+				},
+				"url": {
+					"raw": "https://{{url}}/{{path}}",
+					"protocol": "https",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"{{path}}"
+					]
+				},
+				"description": "Test to get the price and availability of the product"
+			},
+			"response": []
+		},
+		{
+			"name": "test_item_added_to_cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d6602cbf-c928-4df6-8f03-4f4f8c01cd40",
+						"exec": [
+							"var row_total= parseFloat(data.Total).toFixed(1);",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Check amount calculated is according to the specified quantity\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var responsedata = jsonData.data.checkoutCreate.checkout;",
+							"    console.log(\"sku from file \"+ data.SKU);",
+							"    if(responsedata.lineItems.edges[0].node.variant.sku == data.SKU){",
+							"    pm.expect(responsedata.lineItemsSubtotalPrice.amount).to.equal(row_total);",
+							"    console.log(\"total \" + pm.iterationData.get(\"Total\"));",
+							"   }",
+							"    ",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Shopify-Storefront-Access-Token",
+						"value": "{{access_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/graphql",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "mutation {checkoutCreate(input: {\r\n lineItems: [\r\n   {\r\n     variantId: \"{{variant_id}}\",\r\n     quantity: {{quantity}},\r\n     customAttributes: [\r\n       {\r\n         key: \"Perosnal_Text\",\r\n         value: \"myproduct\"\r\n       }\r\n     ]\r\n   }\r\n ]\r\n}){checkout {webUrl id lineItemsSubtotalPrice{amount} lineItems(first:50)  { edges { node {id title quantity customAttributes{key value} variant{id sku price  image{originalSrc}}}}}}}}"
+				},
+				"url": {
+					"raw": "https://{{url}}/{{path}}",
+					"protocol": "https",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"{{path}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
