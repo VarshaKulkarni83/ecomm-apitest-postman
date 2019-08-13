@@ -18,11 +18,13 @@ The collection has test for availablity and price check request. Add other tests
 
 From the folder where the repository is cloned use to run the collection,
 
-newman run '.\Headless commerce API Test.postman_collection.json' -e .\environmentfile -n 10 -d product_export_postman.csv
+newman run '.\Headless_commerce_API_Test.postman_collection.json' -e .\environmentfile -n 10 -d product_export_postman.csv
+
+To view result in a report format, run the command below in newman
+
+newman run '.\Headless_commerce_API_Test.postman_collection.json' -e .\environmentfile -n 10 -d product_export_postman.csv -r htmlextra --reporter-htmlextra-title "API Test Report"
 
 # TODO
 Add other requests in the journey.
-
-Export results where they can be viewed easily and efficiently.
 
 Use multiple data files.
