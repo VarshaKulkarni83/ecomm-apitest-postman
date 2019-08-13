@@ -18,7 +18,7 @@ The collection has test for availablity and price check request. Add other tests
 
 From the folder where the repository is cloned use to run the collection,
 
-newman run '.\Headless commerce API Test.postman_collection.json' -e .\environmentfile -n 10
+newman run '.\Headless commerce API Test.postman_collection.json' -e .\environmentfile -n 10 -d product_export_postman.csv
 
 # TODO
 Add other requests in the journey.
